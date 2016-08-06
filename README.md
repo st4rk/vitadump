@@ -6,4 +6,4 @@ It was based in : https://github.com/xyzz/vita-modump/
 Credits: 
 xyzz - original vita-modump
 St4rk 
-Smoke
+SMOKE
