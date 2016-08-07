@@ -48,6 +48,32 @@ void doDump(SceUID id, SceKernelModuleInfo *info) {
 	}
 }
 
+/*
+ * Thanks to flatz
+ */
+void dumpModuleByPath(char *module_name, char *path) {
+	int result = 0;
+	SceUID moduleId = 0;
+	SceKernelModuleInfo info;
+
+	psvDebugScreenPrintf("Module: %s. Attempting to load: '%s'.\n", module_name, path);
+	moduleId = sceKernelLoadModule(path, 0, NULL);
+	if (moduleId > 0) {
+		psvDebugScreenPrintf("The module was loaded with success\n");
+		info.size = sizeof(info);
+
+		if ((result = sceKernelGetModuleInfo(moduleId, &info)) < 0) {
+		psvDebugScreenPrintf("Failed to get module information, ID: %d, result: 0x%08x\n", moduleId, result);
+		} else {
+			doDump(moduleId, &info);
+		}
+
+		//sceKernelUnloadModule(moduleId, 0, NULL);
+	} else {
+		psvDebugScreenPrintf("Failed to load module: 0x%08X\n", moduleId);
+	}
+}
+
 void dumpModule(SceUID id) {
 	int result = 0;
 	SceKernelLMOption opt;
@@ -143,6 +169,11 @@ _continue_:
 
 	for (i = 0; i < nLoaded; ++i)
 		dumpModule(mList[i]);
+
+	psvDebugScreenPrintf("Dumping modules by name\n");
+	dumpModuleByPath("SceWebKit.bin", "vs0:data/external/webcore/SceWebKitModule.suprx");
+	dumpModuleByPath("SceLibC.bin", "vs0:sys/external/libc.suprx");
+
 
 	psvDebugScreenPrintf("Done\n");
 
