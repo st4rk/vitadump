@@ -174,95 +174,24 @@ _continue_:
 	*/
 	psvDebugScreenPrintf("Dumping modules by name\n");
 	
-	
-	
 	/*
-	TESTKIT ONLY
-	vs0:app/NPXS10095/stitch_core_prx.suprx->2800000000020041 
-	vs0:app/NPXS10095/stitch_prx.suprx->2800000000020042 
-	vs0:vsh/shell/liblocation_provider.suprx->2800000000020011 
-	*/
-	/*
-	dumpModuleByPath("2808000000020002", "os0:kd/acmgr.skprx");
-	dumpModuleByPath("2808000000020007", "os0:kd/authmgr.skprx");
-	dumpModuleByPath("2808000000020060", "os0:kd/bootimage.skprx");
-	dumpModuleByPath("280800000002000d", "os0:kd/buserror.skprx");
-	dumpModuleByPath("2808000000020064", "os0:kd/crashdump.skprx");
-	dumpModuleByPath("2808000000020014", "os0:kd/display.skprx");
-	dumpModuleByPath("2808000000020015", "os0:kd/dmacmgr.skprx");
-	dumpModuleByPath("280800000002005c", "os0:kd/enum_wakeup.skprx");
-	dumpModuleByPath("2808000000020017", "os0:kd/excpmgr.skprx");
-	dumpModuleByPath("2808000000020018", "os0:kd/exfatfs.skprx");
-	dumpModuleByPath("280800000002005e", "os0:kd/gcauthmgr.skprx");
-	dumpModuleByPath("280800000002001f", "os0:kd/gpucoredump_es4.skprx");
-	dumpModuleByPath("2808000000020022", "os0:kd/hdmi.skprx");
-	dumpModuleByPath("2808000000020025", "os0:kd/intrmgr.skprx");
-	dumpModuleByPath("2808000000020026", "os0:kd/iofilemgr.skprx");
-	dumpModuleByPath("280800000002006e", "os0:kd/krm.skprx");
-	dumpModuleByPath("2808000000020066", "os0:kd/lcd.skprx");
-	dumpModuleByPath("2808000000020028", "os0:kd/lowio.skprx");
-	dumpModuleByPath("2808000000000201", "os0:kd/magicgate.skprx");
-	dumpModuleByPath("280800000002005f", "os0:kd/marlin_hci.skprx");
-	dumpModuleByPath("2808000000000201", "os0:kd/mgkeymgr.skprx");
-	dumpModuleByPath("2808000000000202", "os0:kd/mgvideo.skprx");
-	dumpModuleByPath("280800000002002a", "os0:kd/modulemgr.skprx");
-	dumpModuleByPath("280800000002002c", "os0:kd/msif.skprx");
-	dumpModuleByPath("2808000000020031", "os0:kd/oled.skprx");
-	dumpModuleByPath("2808000000000100", "os0:kd/pcbc.skprx");
-	dumpModuleByPath("2808000000020036", "os0:kd/processmgr.skprx");
-	dumpModuleByPath("2808000000020039", "os0:kd/rtc.skprx");
-	dumpModuleByPath("280800000002003b", "os0:kd/sdif.skprx");
-	dumpModuleByPath("280800000002003c", "os0:kd/sdstor.skprx");
-	dumpModuleByPath("280800000002003e", "os0:kd/smsc_proxy.skprx");
-	dumpModuleByPath("280800000002003d", "os0:kd/sm_comm.skprx");
-	dumpModuleByPath("280800000002003f", "os0:kd/ss_mgr.skprx");
-	dumpModuleByPath("2808000000020043", "os0:kd/syscon.skprx");
-	dumpModuleByPath("2808000000020044", "os0:kd/sysmem.skprx");
-	dumpModuleByPath("2808000000020046", "os0:kd/sysstatemgr.skprx");
-	dumpModuleByPath("2808000000020047", "os0:kd/systimer.skprx");
-	dumpModuleByPath("2808000000020048", "os0:kd/threadmgr.skprx");
-	dumpModuleByPath("2809000000000008", "os0:kd/usbdev_serial.skprx");
-	dumpModuleByPath("2808000000020063", "os0:kd/usbpspcm.skprx");
-	dumpModuleByPath("2808000000020061", "os0:kd/usbstor.skprx");
-	dumpModuleByPath("2808000000000203", "os0:kd/usbstormg.skprx");
-	dumpModuleByPath("2808000000020062", "os0:kd/usbstorvstor.skprx");
-	dumpModuleByPath("2808000000020052", "os0:kd/vipimg.skprx");
-	dumpModuleByPath("2808000000020054", "os0:kd/vnzimg.skprx");
-	dumpModuleByPath("2808000000020057", "os0:kd/wlanbt_robin_img_ax.skprx");
-	dumpModuleByPath("280800000002005b", "os0:psp2bootconfig.skprx");
-	dumpModuleByPath("2808000000020059", "os0:psp2config_dolce.skprx");
-	dumpModuleByPath("2808000000020059", "os0:psp2config_vita.skprx");
-	dumpModuleByPath("2e0000000000000a", "os0:sm/act_sm.self");
-	dumpModuleByPath("2e00000000000007", "os0:sm/aimgr_sm.self");
-	dumpModuleByPath("2e00000000000008", "os0:sm/compat_sm.self");
-	dumpModuleByPath("2e0000000000000c", "os0:sm/encdec_w_portability_sm.self");
-	dumpModuleByPath("2e0000000000000d", "os0:sm/gcauthmgr_sm.self");
-	dumpModuleByPath("2e0000000000000b", "os0:sm/mgkm_sm.self");
-	dumpModuleByPath("2e00000000000006", "os0:sm/pm_sm.self");
-	dumpModuleByPath("2e00000000000005", "os0:sm/qaf_sm.self");
-	dumpModuleByPath("2e0000000000000e", "os0:sm/rmauth_sm.self");
-	dumpModuleByPath("2e00000000000010", "os0:sm/spkg_verifier_sm_w_key_2.self");
-	dumpModuleByPath("2e00000000000004", "os0:sm/update_service_sm.self");
-	dumpModuleByPath("2e0000000000000f", "os0:sm/utoken_sm.self");
-	dumpModuleByPath("2800000000000015", "os0:ue/safemode.self");
-	*/
 	dumpModuleByPath("2800000000028005", "os0:us/avcodec_us.suprx");
 	dumpModuleByPath("280000000002800a", "os0:us/driver_us.suprx");
 	dumpModuleByPath("280000000002802a", "os0:us/libgpu_es4.suprx");
 	dumpModuleByPath("2800000000028030", "os0:us/libgxm_es4.suprx");
 	dumpModuleByPath("2800000000028034", "os0:us/libkernel.suprx");
+	*/
 	//dumpModuleByPath("1e6c89bb6fd70485", "pd0:app/NPXS10007/sce_module/libc.suprx");
 	//dumpModuleByPath("3c3b85ca044fab22", "pd0:app/NPXS10007/sce_module/libfios2.suprx");
 	//dumpModuleByPath("9ce10e890f276561", "pd0:app/NPXS10007/sce_module/libult.suprx");
+	/*
 	dumpModuleByPath("280000000002001f", "vs0:app/NPXS10001/np_party_app.suprx");
 	dumpModuleByPath("2800000000020045", "vs0:app/NPXS10013/gaikai-player.suprx");
 	dumpModuleByPath("2800000000020046", "vs0:app/NPXS10013/libSceSecondScreen.suprx");
 	dumpModuleByPath("2800000000020024", "vs0:app/NPXS10015/system_settings_core.suprx");
 	dumpModuleByPath("2800000000020026", "vs0:app/NPXS10021/tel_reg.suprx");
-	//dumpModuleByPath("2808000000000101", "vs0:app/NPXS10028/pcff.skprx");
 	dumpModuleByPath("2800000000020030", "vs0:app/NPXS10065/grief_report_dialog.suprx");
 	dumpModuleByPath("2800000000020035", "vs0:app/NPXS10072/email_engine.suprx");
-	//dumpModuleByPath("2800800000000015", "vs0:app/NPXS10082/spawn.self");
 	dumpModuleByPath("2800000000020045", "vs0:app/NPXS10098/gaikai-player.suprx");
 	dumpModuleByPath("280000000002807f", "vs0:data/external/webcore/jx_web_filtering.suprx");
 	dumpModuleByPath("2800000000028097", "vs0:data/external/webcore/ScePsp2Compat.suprx");
@@ -368,7 +297,7 @@ _continue_:
 	dumpModuleByPath("2800000000024001", "vs0:sys/external/libSceVideoExport.suprx");
 	dumpModuleByPath("2800000000020034", "vs0:sys/external/libSceVideoSearchEmpr.suprx");
 	dumpModuleByPath("280000000002804f", "vs0:sys/external/libSceXml.suprx");
-	/*
+	*/
 	dumpModuleByPath("2800000000028050", "vs0:sys/external/libshellsvc.suprx");
 	dumpModuleByPath("2800000000028051", "vs0:sys/external/libssl.suprx");
 	dumpModuleByPath("2800000000028052", "vs0:sys/external/libsulpha.suprx");
@@ -458,7 +387,7 @@ _continue_:
 	dumpModuleByPath("2800000000020019", "vs0:vsh/shell/location_dialog_plugin.suprx");
 	dumpModuleByPath("2800000000000001", "vs0:vsh/shell/shell.self");
 	dumpModuleByPath("2800000000020025", "vs0:vsh/shell/telephony/initial_check/tel_initial_check_plugin.suprx");
-	*/
+
 	psvDebugScreenPrintf("Done\n");
 
 _exit_:
