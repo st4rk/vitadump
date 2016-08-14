@@ -1,7 +1,7 @@
 /*
  * PS Vita 3.60 module dump
  * Based on https://github.com/xyzz/vita-modump/blob/master/main.c
- * Credits goes to xyz (original vita-modump), st4rk and smoke
+ * Credits goes to xyz (original vita-modump), st4rk, smoke and theflow
  * it's very buggy
  */
 
@@ -21,8 +21,92 @@
 #include "graphics.h"
 
 #define MAX_LOADED_MODULES 256
+#define MAX_PATH_LENGTH 1024
 
 const char *outDir = "ux0:/dump";
+
+int removePath(char *path, uint32_t *value, uint32_t max, void (* SetProgress)(uint32_t value, uint32_t max), int (* cancelHandler)()) {
+	SceUID dfd = sceIoDopen(path);
+	if (dfd >= 0) {
+		int res = 0;
+
+		do {
+			SceIoDirent dir;
+			memset(&dir, 0, sizeof(SceIoDirent));
+
+			res = sceIoDread(dfd, &dir);
+			if (res > 0) {
+				if (strcmp(dir.d_name, ".") == 0 || strcmp(dir.d_name, "..") == 0)
+					continue;
+
+				char *new_path = malloc(strlen(path) + strlen(dir.d_name) + 2);
+				snprintf(new_path, MAX_PATH_LENGTH, "%s/%s", path, dir.d_name);
+
+				if (SCE_S_ISDIR(dir.d_stat.st_mode)) {
+					int ret = removePath(new_path, value, max, SetProgress, cancelHandler);
+					if (ret <= 0) {
+						free(new_path);
+						sceIoDclose(dfd);
+						return ret;
+					}
+				} else {
+					int ret = sceIoRemove(new_path);
+					if (ret < 0) {
+						free(new_path);
+						sceIoDclose(dfd);
+						return ret;
+					}
+
+					if (value)
+						(*value)++;
+
+					if (SetProgress)
+						SetProgress(value ? *value : 0, max);
+
+					if (cancelHandler && cancelHandler()) {
+						free(new_path);
+						sceIoDclose(dfd);
+						return 0;
+					}
+				}
+
+				free(new_path);
+			}
+		} while (res > 0);
+
+		sceIoDclose(dfd);
+
+		int ret = sceIoRmdir(path);
+		if (ret < 0)
+			return ret;
+
+		if (value)
+			(*value)++;
+
+		if (SetProgress)
+			SetProgress(value ? *value : 0, max);
+
+		if (cancelHandler && cancelHandler()) {
+			return 0;
+		}
+	} else {
+		int ret = sceIoRemove(path);
+		if (ret < 0)
+			return ret;
+
+		if (value)
+			(*value)++;
+
+		if (SetProgress)
+			SetProgress(value ? *value : 0, max);
+
+		if (cancelHandler && cancelHandler()) {
+			return 0;
+		}
+	}
+
+	return 1;
+}
 
 void doDump(SceUID id, SceKernelModuleInfo *info) {
 	char filename[2048] = {0};
