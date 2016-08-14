@@ -147,7 +147,9 @@ int main(int argc, char **argv) {
 		if (result == 0) {
 			psvDebugScreenPrintf("The output dir was created\n");
 		} else {
-			psvDebugScreenPrintf("Directory exists\n");
+			psvDebugScreenPrintf("Directory exists\nDeleting and recreating...\n");
+			removePath(outDir, NULL, 0, NULL, NULL);
+			sceIoMkdir(outDir, 0777);
 			goto _continue_;
 		}
 	}
