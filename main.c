@@ -259,17 +259,18 @@ _continue_:
 	*/
 	psvDebugScreenPrintf("Dumping modules by name\n");
 	
-	
+	/*
 	dumpModuleByPath("2800000000028005", "os0:us/avcodec_us.suprx");
 	dumpModuleByPath("280000000002800a", "os0:us/driver_us.suprx");
 	dumpModuleByPath("280000000002802a", "os0:us/libgpu_es4.suprx");
 	dumpModuleByPath("2800000000028030", "os0:us/libgxm_es4.suprx");
 	dumpModuleByPath("2800000000028034", "os0:us/libkernel.suprx");
-	
+	*/
 	//dumpModuleByPath("1e6c89bb6fd70485", "pd0:app/NPXS10007/sce_module/libc.suprx");
 	//dumpModuleByPath("3c3b85ca044fab22", "pd0:app/NPXS10007/sce_module/libfios2.suprx");
 	//dumpModuleByPath("9ce10e890f276561", "pd0:app/NPXS10007/sce_module/libult.suprx");
 	
+	/*
 	dumpModuleByPath("280000000002001f", "vs0:app/NPXS10001/np_party_app.suprx");
 	dumpModuleByPath("2800000000020045", "vs0:app/NPXS10013/gaikai-player.suprx");
 	dumpModuleByPath("2800000000020046", "vs0:app/NPXS10013/libSceSecondScreen.suprx");
@@ -382,7 +383,8 @@ _continue_:
 	dumpModuleByPath("2800000000024001", "vs0:sys/external/libSceVideoExport.suprx");
 	dumpModuleByPath("2800000000020034", "vs0:sys/external/libSceVideoSearchEmpr.suprx");
 	dumpModuleByPath("280000000002804f", "vs0:sys/external/libSceXml.suprx");
-	
+	*/
+	dumpModuleByPath("2800800000000015", "vs0:app/NPXS10082/spawn.self");
 	dumpModuleByPath("2800000000028050", "vs0:sys/external/libshellsvc.suprx");
 	dumpModuleByPath("2800000000028051", "vs0:sys/external/libssl.suprx");
 	dumpModuleByPath("2800000000028052", "vs0:sys/external/libsulpha.suprx");
