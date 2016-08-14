@@ -153,7 +153,7 @@ void dumpModuleByPath(char *module_name, char *path) {
 			doDump(moduleId, &info);
 		}
 
-		//sceKernelUnloadModule(moduleId, 0, NULL);
+		sceKernelUnloadModule(moduleId, 0, NULL);
 	} else {
 		psvDebugScreenPrintf("Failed to load module: 0x%08X\n", moduleId);
 	}
@@ -259,18 +259,16 @@ _continue_:
 	*/
 	psvDebugScreenPrintf("Dumping modules by name\n");
 	
-	/*
+	//dumpModuleByPath("1e6c89bb6fd70485", "pd0:app/NPXS10007/sce_module/libc.suprx");
+	//dumpModuleByPath("3c3b85ca044fab22", "pd0:app/NPXS10007/sce_module/libfios2.suprx");
+	//dumpModuleByPath("9ce10e890f276561", "pd0:app/NPXS10007/sce_module/libult.suprx");
+	
+	//HALF 1/2 <- 116 MODULES
 	dumpModuleByPath("2800000000028005", "os0:us/avcodec_us.suprx");
 	dumpModuleByPath("280000000002800a", "os0:us/driver_us.suprx");
 	dumpModuleByPath("280000000002802a", "os0:us/libgpu_es4.suprx");
 	dumpModuleByPath("2800000000028030", "os0:us/libgxm_es4.suprx");
 	dumpModuleByPath("2800000000028034", "os0:us/libkernel.suprx");
-	*/
-	//dumpModuleByPath("1e6c89bb6fd70485", "pd0:app/NPXS10007/sce_module/libc.suprx");
-	//dumpModuleByPath("3c3b85ca044fab22", "pd0:app/NPXS10007/sce_module/libfios2.suprx");
-	//dumpModuleByPath("9ce10e890f276561", "pd0:app/NPXS10007/sce_module/libult.suprx");
-	
-	/*
 	dumpModuleByPath("280000000002001f", "vs0:app/NPXS10001/np_party_app.suprx");
 	dumpModuleByPath("2800000000020045", "vs0:app/NPXS10013/gaikai-player.suprx");
 	dumpModuleByPath("2800000000020046", "vs0:app/NPXS10013/libSceSecondScreen.suprx");
@@ -383,8 +381,9 @@ _continue_:
 	dumpModuleByPath("2800000000024001", "vs0:sys/external/libSceVideoExport.suprx");
 	dumpModuleByPath("2800000000020034", "vs0:sys/external/libSceVideoSearchEmpr.suprx");
 	dumpModuleByPath("280000000002804f", "vs0:sys/external/libSceXml.suprx");
-	*/
-	dumpModuleByPath("2800800000000015", "vs0:app/NPXS10082/spawn.self");
+	
+	//HALF 2/2 <- 88 MODULES
+	
 	dumpModuleByPath("2800000000028050", "vs0:sys/external/libshellsvc.suprx");
 	dumpModuleByPath("2800000000028051", "vs0:sys/external/libssl.suprx");
 	dumpModuleByPath("2800000000028052", "vs0:sys/external/libsulpha.suprx");
@@ -474,7 +473,8 @@ _continue_:
 	dumpModuleByPath("2800000000020019", "vs0:vsh/shell/location_dialog_plugin.suprx");
 	dumpModuleByPath("2800000000000001", "vs0:vsh/shell/shell.self");
 	dumpModuleByPath("2800000000020025", "vs0:vsh/shell/telephony/initial_check/tel_initial_check_plugin.suprx");
-
+	
+	
 	psvDebugScreenPrintf("Done\n");
 
 _exit_:
