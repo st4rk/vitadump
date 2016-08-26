@@ -192,6 +192,19 @@ void doDump(SceUID id, SceKernelModuleInfo *info) {
 	}
 
 	sceIoClose(fout);
+
+	snprintf(filename, sizeof(filename), "%s/%s_info.bin",
+		 outDir, info->module_name);
+
+	psvDebugScreenPrintf("Dumping %s\n", filename);
+
+	if (!(fout = sceIoOpen(filename, SCE_O_CREAT | SCE_O_WRONLY, 0777))) {
+		psvDebugScreenPrintf("Failed to open the file for writing.\n");
+		return;
+	}
+
+	sceIoWrite (fout, info, sizeof (*info));
+	sceIoClose (fout);
 }
 
 /*
