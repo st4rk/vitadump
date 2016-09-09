@@ -163,7 +163,7 @@ void doDump(SceUID id, SceKernelModuleInfo *info) {
 
 	sceIoWrite (fout, &ehdr, sizeof (ehdr));
 
-	offset = sizeof (ehdr) + phdr->e_phnum * sizeof(phdr);
+	offset = sizeof (ehdr) + ehdr.e_phnum * sizeof(phdr);
 	phdr.p_type = PT_LOAD;
 	phdr.p_paddr = 0;
 	phdr.p_align = 1;
