@@ -1,5 +1,6 @@
 TITLE_ID = NIDUMP001
 TARGET = mDump
+PSVITAIP = 192.168.1.115
 
 OBJS = $(patsubst %.c, %.o, $(wildcard *.c))
 HEADERS = $(wildcard *.h)
@@ -28,3 +29,7 @@ eboot.bin: $(TARGET).velf
 
 clean:
 	@rm -rf *.velf *.elf *.vpk $(OBJS) param.sfo eboot.bin
+
+send: eboot.bin
+	curl -T eboot.bin ftp://$(PSVITAIP):1337/ux0:/app/$(TITLE_ID)/
+	@echo "Sent."
