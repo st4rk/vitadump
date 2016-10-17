@@ -343,6 +343,7 @@ _continue_:
 	dumpModuleByPath("280000000002802a", "os0:us/libgpu_es4.suprx");
 	dumpModuleByPath("2800000000028030", "os0:us/libgxm_es4.suprx");
 	dumpModuleByPath("2800000000028034", "os0:us/libkernel.suprx");
+	dumpModuleByPath("2800000000000015", "os0:ue/safemode.self");
 	dumpModuleByPath("2800000000000027", "vs0:/app/NPXS10000/eboot.bin");
 	dumpModuleByPath("2800000000000026", "vs0:/app/NPXS10001/eboot.bin");
 	dumpModuleByPath("280000000002001f", "vs0:/app/NPXS10001/np_party_app.suprx");
