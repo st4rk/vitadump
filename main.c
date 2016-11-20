@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <psp2/moduleinfo.h>
 #include <psp2/io/fcntl.h>
 #include <psp2/io/dirent.h>
 #include <psp2/kernel/threadmgr.h>
@@ -27,7 +26,7 @@
 
 const char *outDir = "ux0:/dump";
 
-int removePath(char *path, uint32_t *value, uint32_t max, void (* SetProgress)(uint32_t value, uint32_t max), int (* cancelHandler)()) {
+int removePath(const char *path, uint32_t *value, uint32_t max, void (* SetProgress)(uint32_t value, uint32_t max), int (* cancelHandler)()) {
 	SceUID dfd = sceIoDopen(path);
 	if (dfd >= 0) {
 		int res = 0;
@@ -277,7 +276,7 @@ void dumpModule(SceUID id) {
 		doDump(id, &info);
 	}
 
-}	
+}
 
 void newModules() {
 	SceUInt16 i = 0;
@@ -299,7 +298,7 @@ int main(int argc, char **argv) {
 
 
 	int result = 0;
-	
+
 	if ((result = sceIoOpen(outDir,SCE_O_RDONLY, 0777)) < 0) {
 		result = sceIoMkdir(outDir, 0777);
 
@@ -332,11 +331,11 @@ _continue_:
 		dumpModule(mList[i]);
 	*/
 	psvDebugScreenPrintf("Dumping modules by name\n");
-	
+
 	//dumpModuleByPath("1e6c89bb6fd70485", "pd0:app/NPXS10007/sce_module/libc.suprx");
 	//dumpModuleByPath("3c3b85ca044fab22", "pd0:app/NPXS10007/sce_module/libfios2.suprx");
 	//dumpModuleByPath("9ce10e890f276561", "pd0:app/NPXS10007/sce_module/libult.suprx");
-	
+
 	//251 USERMODULES
 	dumpModuleByPath("2800000000028005", "os0:us/avcodec_us.suprx");
 	dumpModuleByPath("280000000002800a", "os0:us/driver_us.suprx");
@@ -593,12 +592,12 @@ _continue_:
 	dumpModuleByPath("2800000000000001", "vs0:/vsh/shell/shell.self");
 	dumpModuleByPath("2800000000020025", "vs0:/vsh/shell/telephony/initial_check/tel_initial_check_plugin.suprx");
 
-	
-	
+
+
 	psvDebugScreenPrintf("Done\n");
 
-_exit_:
-	
+//_exit_:
+
 	while (1) {}
 
 	sceKernelExitProcess(0);
