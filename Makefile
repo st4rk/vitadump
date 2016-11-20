@@ -2,7 +2,7 @@ TITLE_ID = NIDUMP001
 TARGET = mDump
 PSVITAIP = 192.168.1.115
 
-OBJS = $(patsubst %.c, %.o, $(wildcard *.c))
+MAIN_OBJS = main.o graphics.o font.o
 HEADERS = $(wildcard *.h)
 
 LIBS = -lSceDisplay_stub -lSceGxm_stub -lSceCtrl_stub -lSceSysmodule_stub
@@ -21,14 +21,14 @@ all: $(TARGET).vpk
 eboot.bin: $(TARGET).velf
 	vita-make-fself $< eboot.bin
 
-%.velf: %.elf
+mDump.velf: mDump.elf
 	vita-elf-create $< $@
 
-%.elf: $(OBJS)
+mDump.elf: $(MAIN_OBJS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 clean:
-	@rm -rf *.velf *.elf *.vpk $(OBJS) param.sfo eboot.bin
+	@rm -rf *.velf *.elf *.vpk $(MAIN_OBJS) param.sfo eboot.bin
 
 send: eboot.bin
 	curl -T eboot.bin ftp://$(PSVITAIP):1337/ux0:/app/$(TITLE_ID)/
