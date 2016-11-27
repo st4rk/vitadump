@@ -5,6 +5,7 @@
 #include <psp2kern/kernel/threadmgr.h>
 #include <psp2kern/kernel/sysmem.h>
 #include <psp2kern/io/fcntl.h>
+#include "elf.h"
 
 #define DUMP_PATH "ux0:dump/"
 #define LOG_FILE DUMP_PATH "kplugin_log.txt"
@@ -36,6 +37,105 @@ static void dump_region(const char *filename, void *addr, unsigned int size)
 void _start() __attribute__ ((weak, alias ("module_start")));
 
 #define MOD_LIST_SIZE 0x80
+
+
+void doDump(SceKernelModuleInfo *info) {
+	char filename[2048] = {0};
+	int i;
+	int fout;
+	Elf32_Ehdr ehdr;
+	Elf32_Phdr phdr;
+	Elf32_Off offset;
+
+	snprintf(filename, sizeof(filename), "%s/%s.elf",
+		 DUMP_PATH, info->module_name);
+
+	LOG("Dumping %s\n", filename);
+
+	if (!(fout = sceIoOpenForDriver(filename, SCE_O_CREAT | SCE_O_WRONLY, 0777))) {
+		LOG("Failed to open the file for writing.\n");
+		return;
+	}
+
+	ehdr.e_ident[EI_MAG0] = ELFMAG0;
+	ehdr.e_ident[EI_MAG1] = ELFMAG1;
+	ehdr.e_ident[EI_MAG2] = ELFMAG2;
+	ehdr.e_ident[EI_MAG3] = ELFMAG3;
+	ehdr.e_ident[EI_CLASS] = ELFCLASS32;
+	ehdr.e_ident[EI_DATA] = ELFDATA2LSB;
+	ehdr.e_ident[EI_VERSION] = EV_CURRENT;
+	ehdr.e_ident[EI_OSABI] = ELFOSABI_ARM_AEABI;
+	ehdr.e_ident[EI_ABIVERSION] = 0;
+	memset(ehdr.e_ident + EI_PAD, 0, EI_NIDENT - EI_PAD);
+	ehdr.e_type = ET_CORE;
+	ehdr.e_machine = EM_ARM;
+	ehdr.e_version = EV_CURRENT;
+	ehdr.e_entry = (Elf32_Addr)info->module_start;
+	ehdr.e_phoff = sizeof (ehdr);
+	ehdr.e_flags = EF_ARM_HASENTRY
+		       | EF_ARM_ABI_FLOAT_HARD
+		       | EF_ARM_EABI_VER5;
+	ehdr.e_ehsize = sizeof (ehdr);
+	ehdr.e_phentsize = sizeof (Elf32_Phdr);
+	ehdr.e_shentsize = sizeof (Elf32_Shdr);
+	ehdr.e_shnum = 0;
+	ehdr.e_shstrndx = 0;
+
+	ehdr.e_shoff = 0;
+	ehdr.e_phnum = 0;
+	for (i = 0; i < 4; ++i) {
+		if (info->segments[i].vaddr == NULL)
+			continue;
+
+		++ehdr.e_phnum;
+	}
+
+	sceIoWriteForDriver (fout, &ehdr, sizeof (ehdr));
+
+	offset = sizeof (ehdr) + ehdr.e_phnum * sizeof(phdr);
+	phdr.p_type = PT_LOAD;
+	phdr.p_paddr = 0;
+	phdr.p_align = 1;
+	for (i = 0; i < 4; ++i) {
+		if (info->segments[i].vaddr == NULL)
+			continue;
+
+		phdr.p_flags = info->segments[i].perms;
+		phdr.p_offset = offset;
+		phdr.p_vaddr = (Elf32_Addr)info->segments[i].vaddr;
+		phdr.p_memsz = info->segments[i].memsz;
+		phdr.p_filesz = phdr.p_memsz;
+
+		sceIoWriteForDriver (fout, &phdr, sizeof (phdr));
+
+		offset += phdr.p_filesz;
+	}
+
+	for (i = 0; i < 4; ++i) {
+		if (info->segments[i].vaddr == NULL) {
+			LOG("Segment #%x is empty, skipping\n", i);
+			continue;
+		}
+
+		sceIoWriteForDriver(fout, info->segments[i].vaddr, info->segments[i].memsz);
+	}
+
+	sceIoCloseForDriver(fout);
+
+	snprintf(filename, sizeof(filename), "%s/%s_info.bin",
+		 DUMP_PATH, info->module_name);
+
+	LOG("Dumping %s\n", filename);
+
+	if (!(fout = sceIoOpenForDriver(filename, SCE_O_CREAT | SCE_O_WRONLY, 0777))) {
+		LOG("Failed to open the file for writing.\n");
+		return;
+	}
+
+	sceIoWriteForDriver (fout, info, sizeof (*info));
+	sceIoCloseForDriver (fout);
+}
+
 
 int module_start(SceSize argc, const void *args)
 {
@@ -81,6 +181,7 @@ int module_start(SceSize argc, const void *args)
 
 			dump_region(path, seginfo->vaddr, seginfo->memsz);
 		}
+		doDump(&modinfo);
 	}
 
 	return SCE_KERNEL_START_SUCCESS;
