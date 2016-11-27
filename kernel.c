@@ -39,20 +39,21 @@ void _start() __attribute__ ((weak, alias ("module_start")));
 #define MOD_LIST_SIZE 0x80
 
 
-void doDump(SceKernelModuleInfo *info) {
-	char filename[2048] = {0};
+void doDump(const SceKernelModuleInfo *info) {
+	char path[128] = {0};
 	int i;
-	int fout;
+	SceUID fd;
 	Elf32_Ehdr ehdr;
 	Elf32_Phdr phdr;
 	Elf32_Off offset;
 
-	snprintf(filename, sizeof(filename), "%s/%s.elf",
-		 DUMP_PATH, info->module_name);
+	snprintf(path, sizeof(path), DUMP_PATH "%s.elf",
+			info->module_name);
 
-	LOG("Dumping %s\n", filename);
+	LOG("Dumping %s\n", path);
 
-	if (!(fout = sceIoOpenForDriver(filename, SCE_O_CREAT | SCE_O_WRONLY, 0777))) {
+	fd = sceIoOpenForDriver(path, SCE_O_CREAT | SCE_O_WRONLY | SCE_O_TRUNC, 6);
+	if (fd < 0) {
 		LOG("Failed to open the file for writing.\n");
 		return;
 	}
@@ -71,13 +72,13 @@ void doDump(SceKernelModuleInfo *info) {
 	ehdr.e_machine = EM_ARM;
 	ehdr.e_version = EV_CURRENT;
 	ehdr.e_entry = (Elf32_Addr)info->module_start;
-	ehdr.e_phoff = sizeof (ehdr);
+	ehdr.e_phoff = sizeof(ehdr);
 	ehdr.e_flags = EF_ARM_HASENTRY
-		       | EF_ARM_ABI_FLOAT_HARD
-		       | EF_ARM_EABI_VER5;
-	ehdr.e_ehsize = sizeof (ehdr);
-	ehdr.e_phentsize = sizeof (Elf32_Phdr);
-	ehdr.e_shentsize = sizeof (Elf32_Shdr);
+					| EF_ARM_ABI_FLOAT_HARD
+					| EF_ARM_EABI_VER5;
+	ehdr.e_ehsize = sizeof(ehdr);
+	ehdr.e_phentsize = sizeof(Elf32_Phdr);
+	ehdr.e_shentsize = sizeof(Elf32_Shdr);
 	ehdr.e_shnum = 0;
 	ehdr.e_shstrndx = 0;
 
@@ -90,9 +91,9 @@ void doDump(SceKernelModuleInfo *info) {
 		++ehdr.e_phnum;
 	}
 
-	sceIoWriteForDriver (fout, &ehdr, sizeof (ehdr));
+	sceIoWriteForDriver(fd, &ehdr, sizeof(ehdr));
 
-	offset = sizeof (ehdr) + ehdr.e_phnum * sizeof(phdr);
+	offset = sizeof(ehdr) + ehdr.e_phnum * sizeof(phdr);
 	phdr.p_type = PT_LOAD;
 	phdr.p_paddr = 0;
 	phdr.p_align = 1;
@@ -106,7 +107,7 @@ void doDump(SceKernelModuleInfo *info) {
 		phdr.p_memsz = info->segments[i].memsz;
 		phdr.p_filesz = phdr.p_memsz;
 
-		sceIoWriteForDriver (fout, &phdr, sizeof (phdr));
+		sceIoWriteForDriver(fd, &phdr, sizeof(phdr));
 
 		offset += phdr.p_filesz;
 	}
@@ -117,23 +118,24 @@ void doDump(SceKernelModuleInfo *info) {
 			continue;
 		}
 
-		sceIoWriteForDriver(fout, info->segments[i].vaddr, info->segments[i].memsz);
+		sceIoWriteForDriver(fd, info->segments[i].vaddr, info->segments[i].memsz);
 	}
 
-	sceIoCloseForDriver(fout);
+	sceIoCloseForDriver(fd);
 
-	snprintf(filename, sizeof(filename), "%s/%s_info.bin",
-		 DUMP_PATH, info->module_name);
+	snprintf(path, sizeof(path), DUMP_PATH "%s_info.bin",
+		 info->module_name);
 
-	LOG("Dumping %s\n", filename);
+	LOG("Dumping %s\n", path);
 
-	if (!(fout = sceIoOpenForDriver(filename, SCE_O_CREAT | SCE_O_WRONLY, 0777))) {
+	fd = sceIoOpenForDriver(path, SCE_O_CREAT | SCE_O_WRONLY | SCE_O_TRUNC, 6);
+	if (fd < 0) {
 		LOG("Failed to open the file for writing.\n");
 		return;
 	}
 
-	sceIoWriteForDriver (fout, info, sizeof (*info));
-	sceIoCloseForDriver (fout);
+	sceIoWriteForDriver(fd, info, sizeof(*info));
+	sceIoCloseForDriver(fd);
 }
 
 
@@ -174,6 +176,9 @@ int module_start(SceSize argc, const void *args)
 			SceKernelSegmentInfo *seginfo = &modinfo.segments[j];
 
 			if (seginfo->size != sizeof(*seginfo))
+				continue;
+
+			if (seginfo->vaddr == NULL)
 				continue;
 
 			snprintf(path, sizeof(path), DUMP_PATH "%s_0x%08X_seg%d.bin",
