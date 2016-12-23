@@ -24,14 +24,14 @@ static void dump_region(const char *filename, void *addr, unsigned int size)
 {
 	SceUID fd;
 
-	if (!(fd = sceIoOpenForDriver(filename, SCE_O_WRONLY | SCE_O_CREAT | SCE_O_TRUNC, 6))) {
+	if (!(fd = ksceIoOpen(filename, SCE_O_WRONLY | SCE_O_CREAT | SCE_O_TRUNC, 6))) {
 		LOG("Error opening %s\n", filename);
 		return;
 	}
 
-	sceIoWriteForDriver(fd, addr, size);
+	ksceIoWrite(fd, addr, size);
 
-	sceIoCloseForDriver(fd);
+	ksceIoClose(fd);
 }
 
 void _start() __attribute__ ((weak, alias ("module_start")));
@@ -52,7 +52,7 @@ void doDump(const SceKernelModuleInfo *info) {
 
 	LOG("Dumping %s\n", path);
 
-	fd = sceIoOpenForDriver(path, SCE_O_CREAT | SCE_O_WRONLY | SCE_O_TRUNC, 6);
+	fd = ksceIoOpen(path, SCE_O_CREAT | SCE_O_WRONLY | SCE_O_TRUNC, 6);
 	if (fd < 0) {
 		LOG("Failed to open the file for writing.\n");
 		return;
@@ -91,7 +91,7 @@ void doDump(const SceKernelModuleInfo *info) {
 		++ehdr.e_phnum;
 	}
 
-	sceIoWriteForDriver(fd, &ehdr, sizeof(ehdr));
+	ksceIoWrite(fd, &ehdr, sizeof(ehdr));
 
 	offset = sizeof(ehdr) + ehdr.e_phnum * sizeof(phdr);
 	phdr.p_type = PT_LOAD;
@@ -107,7 +107,7 @@ void doDump(const SceKernelModuleInfo *info) {
 		phdr.p_memsz = info->segments[i].memsz;
 		phdr.p_filesz = phdr.p_memsz;
 
-		sceIoWriteForDriver(fd, &phdr, sizeof(phdr));
+		ksceIoWrite(fd, &phdr, sizeof(phdr));
 
 		offset += phdr.p_filesz;
 	}
@@ -118,24 +118,24 @@ void doDump(const SceKernelModuleInfo *info) {
 			continue;
 		}
 
-		sceIoWriteForDriver(fd, info->segments[i].vaddr, info->segments[i].memsz);
+		ksceIoWrite(fd, info->segments[i].vaddr, info->segments[i].memsz);
 	}
 
-	sceIoCloseForDriver(fd);
+	ksceIoClose(fd);
 
 	snprintf(path, sizeof(path), DUMP_PATH "%s_info.bin",
 		 info->module_name);
 
 	LOG("Dumping %s\n", path);
 
-	fd = sceIoOpenForDriver(path, SCE_O_CREAT | SCE_O_WRONLY | SCE_O_TRUNC, 6);
+	fd = ksceIoOpen(path, SCE_O_CREAT | SCE_O_WRONLY | SCE_O_TRUNC, 6);
 	if (fd < 0) {
 		LOG("Failed to open the file for writing.\n");
 		return;
 	}
 
-	sceIoWriteForDriver(fd, info, sizeof(*info));
-	sceIoCloseForDriver(fd);
+	ksceIoWrite(fd, info, sizeof(*info));
+	ksceIoClose(fd);
 }
 
 
@@ -154,7 +154,7 @@ int module_start(SceSize argc, const void *args)
 	memset(modlist, 0, sizeof(modlist));
 
 	num = MOD_LIST_SIZE;
-	ret = sceKernelGetModuleListForKernel(KERNEL_PID, 0x80000001, 1, modlist, &num);
+	ret = ksceKernelGetModuleList(KERNEL_PID, 0x80000001, 1, modlist, &num);
 	if (ret < 0)
 		LOG("Error getting the module list\n");
 
@@ -163,7 +163,7 @@ int module_start(SceSize argc, const void *args)
 	for (i = 0; i < num; i++) {
 		memset(&modinfo, 0, sizeof(modinfo));
 
-		ret = sceKernelGetModuleInfoForKernel(KERNEL_PID, modlist[i], &modinfo);
+		ret = ksceKernelGetModuleInfo(KERNEL_PID, modlist[i], &modinfo);
 		if (ret < 0) {
 			LOG("Error getting the module info for module: %d\n", i);
 			continue;
@@ -199,24 +199,24 @@ int module_stop(SceSize argc, const void *args)
 
 void log_reset()
 {
-	SceUID fd = sceIoOpenForDriver(LOG_FILE,
+	SceUID fd = ksceIoOpen(LOG_FILE,
 		SCE_O_WRONLY | SCE_O_CREAT | SCE_O_TRUNC, 6);
 	if (fd < 0)
 		return;
 
-	sceIoCloseForDriver(fd);
+	ksceIoClose(fd);
 }
 
 void log_write(const char *buffer, size_t length)
 {
-	extern int sceIoMkdirForDriver(const char *, int);
-	sceIoMkdirForDriver(DUMP_PATH, 6);
+	extern int ksceIoMkdir(const char *, int);
+	ksceIoMkdir(DUMP_PATH, 6);
 
-	SceUID fd = sceIoOpenForDriver(LOG_FILE,
+	SceUID fd = ksceIoOpen(LOG_FILE,
 		SCE_O_WRONLY | SCE_O_CREAT | SCE_O_APPEND, 6);
 	if (fd < 0)
 		return;
 
-	sceIoWriteForDriver(fd, buffer, length);
-	sceIoCloseForDriver(fd);
+	ksceIoWrite(fd, buffer, length);
+	ksceIoClose(fd);
 }
