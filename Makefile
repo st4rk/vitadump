@@ -21,7 +21,7 @@ mDump.vpk: eboot.bin
 	vita-pack-vpk -s param.sfo -b eboot.bin $@
 
 eboot.bin: $(TARGET).velf
-	vita-make-fself $< eboot.bin
+	vita-make-fself -c $< eboot.bin
 
 mDump.velf: mDump.elf
 	vita-elf-create $< $@
@@ -30,7 +30,7 @@ mDump.elf: $(MAIN_OBJS)
 	$(CC) $(CFLAGS) $^ $(LIBS) -o $@
 
 kDump.skprx: kDump.velf
-	vita-make-fself $< $@
+	vita-make-fself -c $< $@
 
 kDump.velf: kDump.elf
 	vita-elf-create -e exports.yml $< $@
